@@ -29,7 +29,7 @@ With data:
 ```json
 // tag = access.summary
 {
-  mother_host": "kvm001.udzura.jp",
+  "mother_host": "kvm001.udzura.jp",
   "vhost": "front.udzura.com",
   "count_2xx": 1234,
   "count_3xx": 567,
