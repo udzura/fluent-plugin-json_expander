@@ -1,11 +1,10 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'fluent/plugin/json_expander/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "fluent-plugin-json_expander"
-  spec.version       = Fluent::Plugin::JsonExpander::VERSION
+  spec.version       = "0.0.1"
   spec.authors       = ["Uchio KONDO"]
   spec.email         = ["udzura@udzura.jp"]
 
@@ -23,4 +22,9 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.10"
   spec.add_development_dependency "rake", "~> 10.0"
+
+  spec.add_development_dependency "test-unit", ">= 3"
+  spec.add_development_dependency "test-unit-rr"
+  spec.add_development_dependency "power_assert"
+  spec.add_development_dependency "pry"
 end

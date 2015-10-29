@@ -1,4 +1,4 @@
-class Fluent::ForestOutput < Fluent::MultiOutput
+class Fluent::JsonExpanderOutput < Fluent::MultiOutput
   Fluent::Plugin.register_output('json_expander', self)
 
   config_param :subtype,         :string
