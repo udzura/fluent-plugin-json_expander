@@ -1,17 +1,17 @@
-# fluent-plugin-jsonbreak
+# fluent-plugin-json_expander
 
 
 ## Installation
 
 Install it yourself as:
 
-    $ fluent-gem install fluent-plugin-jsonbreak
+    $ fluent-gem install fluent-plugin-json_expander
 
 ## Usage
 
 ```xml
 <match access.summary>
-  type jsonbreak
+  type json_expander
   subtype growthforecast
   delete_used_key false # or true if you want to delete the key
                         # used in template construction
@@ -56,7 +56,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/fluent-plugin-jsonbreak. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/udzura/fluent-plugin-json_expander. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
 
 
 ## License
