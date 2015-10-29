@@ -66,6 +66,24 @@ add_prefix hello
     assert { Fluent::EchoPoolOutput.echopool[3][:message] == "Hello, Foo3 Bar!" }
   end
 
+    def test_emit_many_times_with_same_data
+    d = create_driver
+    time = Time.parse("2012-01-02 13:14:15").to_i
+    d.tag = 'test.default'
+    d.run {
+      d.emit({'first_name' => "Yukihiro", 'last_name' => "Matsumoto"}, time)
+      d.emit({'first_name' => "Yukihiro", 'last_name' => "Matsumoto"}, time)
+      d.emit({'first_name' => "Yukihiro", 'last_name' => "Matsumoto"}, time)
+      d.emit({'first_name' => "Yukihiro", 'last_name' => "Matsumoto"}, time)
+    }
+
+    assert { Fluent::EchoPoolOutput.echopool.size == 4 }
+    assert { Fluent::EchoPoolOutput.echopool[0][:message] == "Hello, Yukihiro Matsumoto!" }
+    assert { Fluent::EchoPoolOutput.echopool[1][:message] == "Hello, Yukihiro Matsumoto!" }
+    assert { Fluent::EchoPoolOutput.echopool[2][:message] == "Hello, Yukihiro Matsumoto!" }
+    assert { Fluent::EchoPoolOutput.echopool[3][:message] == "Hello, Yukihiro Matsumoto!" }
+  end
+
   def test_with_delete_used_key
     d = create_driver(conf: get_config(delete_used_key: 'true'))
     time = Time.parse("2012-01-02 13:14:15").to_i
