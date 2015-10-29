@@ -62,4 +62,30 @@ add_prefix hello
     assert { emit0[:record]  == {"extra" => "arg"} }
     assert { emit0[:tag]     == "hello.default" }
   end
+
+  def test_with_no_handle_empty_as_error
+    d = create_driver(conf: get_config(handle_empty_as_error: 'false'))
+    time = Time.parse("2012-01-02 13:14:15").to_i
+    d.tag = 'test.default'
+    d.run {
+      d.emit({'last_name' => "Matsumoto"}, time)
+    }
+
+    assert { Fluent::EchoPoolOutput.echopool.size == 1 }
+    emit0 = Fluent::EchoPoolOutput.echopool[0]
+    assert { emit0[:message] == "Hello,  Matsumoto!" }
+    assert { emit0[:record]  == {"last_name"=>"Matsumoto"} }
+    assert { emit0[:tag]     == "hello.default" }
+  end
+
+  def test_with_handle_empty_as_error
+    d = create_driver(conf: get_config(handle_empty_as_error: 'true'))
+    time = Time.parse("2012-01-02 13:14:15").to_i
+    d.tag = 'test.default'
+    d.run {
+      d.emit({'last_name' => "Matsumoto"}, time)
+    }
+
+    assert { Fluent::EchoPoolOutput.echopool.size == 0 }
+  end
 end
