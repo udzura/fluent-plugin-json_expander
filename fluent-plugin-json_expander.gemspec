@@ -26,5 +26,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "test-unit", ">= 3"
   spec.add_development_dependency "test-unit-rr"
   spec.add_development_dependency "power_assert"
-  spec.add_development_dependency "pry"
 end

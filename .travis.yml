@@ -1,4 +1,14 @@
 language: ruby
+
 rvm:
-  - 2.1.6
+  - 2.0.0
+  - 2.1
+  - 2.2
+
 before_install: gem install bundler -v 1.10.6
+
+script: bundle exec rake test
+
+notifications:
+  slack:
+    secure: S3CV6glzkzmVCEmXv0/mqizzBdGJk7btU2Y2pqP9V5JuQO/5ememCSxbmqcbMiO6CLRUIObFxhUxlWpvZspauQVX6xNMPZPgoTM9Ma5a+kxYkXc/7izbCqEhaqO8Qf2J78Ly5osqE4DtzYjQ6An85dDJ2mrhbuOrNINJkzL4x34jZgxLfNUIzcn1yC/MOstLqSWBPeSWUmh/cL8Jb74q+vLSYY5QdZvnGtxUvf8kWK/dfaT9xU9TUU+axdRJRT7VZqXEUtkuwhAEUElGNOFNuPUK95pxtGujVI+TI5s4+wq9rBRINGULpXQZh897pvHyAqGApxz/yxt/tsLGRT+B0Jn2EJ5J0eA0Aaew8Zwzp5Vpa3Q07jxr5EvGEWEHlNO1fTkg+SFE3EZO+I+0Mvlsqc1le8clGcssPyUCNl/ddvtbIR4QpcYf+JxE7YVgKCPGMdHQrmfTiqiuYfp6XhIiW5dcXa4WwT4/aCW0C/DtxMj74MZOfuMKGzyAOIQem/KZnxQj9zQG55ofCyUxjWUcdqHeLaHvVhOf5SX9O5CGyO1tpFW54Lj3nXO5EuJNj+pxIMVLPuP4oUkDN5xbMYF8IrNfYkXpOYJCvUpALmU7F9CfuNkJQwgDA3nQl4ptby8s/Ml8NzDPJnXxFVjF2hXocgHYy8Kqa344PleBpOG+da0=
