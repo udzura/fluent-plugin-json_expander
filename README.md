@@ -49,6 +49,11 @@ Will extracted to below:
 </match>
 ```
 
+### Options
+
+* `delete_used_key` - Deletes the key in the data when it is used to expand. Default: `false`
+* `handle_empty_as_error` - Raise error that the value for the specified key is empty in template. Default: `false`
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake false` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

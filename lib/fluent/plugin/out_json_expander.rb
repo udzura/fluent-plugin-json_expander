@@ -1,10 +1,12 @@
 class Fluent::JsonExpanderOutput < Fluent::MultiOutput
   Fluent::Plugin.register_output('json_expander', self)
 
-  config_param :subtype,         :string
-  config_param :remove_prefix,   :string, :default => nil
-  config_param :add_prefix,      :string, :default => nil
-  config_param :delete_used_key, :bool,   :default => false
+  config_param :subtype,       :string
+  config_param :remove_prefix, :string, :default => nil
+  config_param :add_prefix,    :string, :default => nil
+
+  config_param :delete_used_key,       :bool, :default => false
+  config_param :handle_empty_as_error, :bool, :default => false
 
   attr_reader :outputs
 
