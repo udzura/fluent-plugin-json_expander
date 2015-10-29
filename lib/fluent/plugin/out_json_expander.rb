@@ -43,7 +43,7 @@ class Fluent::JsonExpanderOutput < Fluent::MultiOutput
       tag = tag[@removed_length..-1]
     end
     if @add_prefix
-      tag = tag.empty? ? (@added_prefix_string + tag) : @add_prefix
+      tag = tag.empty? ? @add_prefix : (@added_prefix_string + tag)
     end
 
     es.each {|time, record|
