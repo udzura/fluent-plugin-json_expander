@@ -78,6 +78,17 @@ add_prefix hello
     }
 
     assert { d.instance.__send__(:mappings).size == 4 }
+
+    d = create_driver
+    time = Time.parse("2012-01-02 13:14:15").to_i
+    d.tag = 'test.default'
+    d.run {
+      d.emit({'first_name' => "Yukihiro", 'last_name' => "Matsumoto"}, time)
+      d.emit({'first_name' => "Yukihiro", 'last_name' => "Matsumoto"}, time)
+      d.emit({'first_name' => "Yukihiro", 'last_name' => "Matsumoto"}, time)
+      d.emit({'first_name' => "Yukihiro", 'last_name' => "Matsumoto"}, time)
+    }
+    assert { d.instance.__send__(:mappings).size == 1 }
   end
 
   def test_emit_many_times_with_same_data
