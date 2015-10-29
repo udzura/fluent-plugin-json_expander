@@ -1,7 +1,7 @@
 module Fluent
   module Plugin
-    module Jsonbreak
-      VERSION = "0.1.0"
+    module JsonExpander
+      VERSION = "0.0.1"
     end
   end
 end
