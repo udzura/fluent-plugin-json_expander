@@ -27,8 +27,15 @@ class Fluent::JsonExpanderOutput < Fluent::MultiOutput
     end
 
     @outputs = []
-  end
+    @mutex = Mutex.new
 
+    templates = conf.elements.select{|e| e.name == 'template' }
+    if templates.size != 1
+      raise Fluent::ConfigError, "Just 1 template must be contained"
+    end
+
+    @template = templates.first
+  end
 
   def emit(tag, es, chain)
     if @remove_prefix and
@@ -39,6 +46,78 @@ class Fluent::JsonExpanderOutput < Fluent::MultiOutput
       tag = tag.empty? ? (@added_prefix_string + tag) : @add_prefix
     end
 
+    es.each {|time, record|
+      output = new_output(record)
+      if output
+        output.emit(tag, es, chain)
+      end
+    }
     chain.next
+  end
+
+  private
+
+  def new_output(data)
+    o = nil
+    begin
+      @mutex.synchronize do
+        if e = expand_elm(data)
+          o = Fluent::Plugin.new_output(@subtype)
+          o.configure(e)
+          o.start
+
+          @outputs.push(o)
+        end
+      end
+
+      log.info "[out_json_expand] Expanded new output: #{@subtype}"
+    rescue Fluent::ConfigError => e
+      log.error "failed to configure sub output #{@subtype}: #{e.message}"
+      log.error e.backtrace.join("\n")
+      log.error "Cannot output messages with data #{data.inspect}"
+      o = nil
+    rescue StandardError => e
+      log.error "failed to configure/start sub output #{@subtype}: #{e.message}"
+      log.error e.backtrace.join("\n")
+      log.error "Cannot output messages with data #{data.inspect}"
+      o = nil
+    end
+
+    return o
+  end
+
+  SCAN_DATA_RE = /\$\{data\[(?:[_a-zA-Z][_a-zA-Z0-9]*)\]\}/
+  SCAN_KEY_NAME_RE = /\[([_a-zA-Z][_a-zA-Z0-9]*)\]/
+
+  def expand_elm(template, data)
+    attr = {}
+    template.each do |k, v|
+      v = v.gsub(SCAN_DATA_RE) do |matched|
+        key_matched = matched.scan(SCAN_KEY_NAME_RE)[0]
+        if !key_matched or !key_matched[0]
+          raise(Fluent::ConfigError, "[BUG] data matched in template, but could not find key name")
+        end
+        if @handle_empty_as_error
+          k = key_matched[0]
+          data[k] || mark_errored(k, data)
+        else
+          data[key_matched[0]] || ""
+        end
+      end
+      attr[k] = v
+    end
+    # Expand recursively
+    sub_elms = template.elements.map {|e| expand_elm(data) }
+
+    if @mark_errored
+      nil
+    else
+      Fluent::Config::Element.new('instance', '', attr, sub_elms)
+    end
+  end
+
+  def mark_errored(k, data)
+    log.error "Could not find value for `#{k}' in data #{data.inspect}, Fluentd skips this"
+    @mark_errored = true
   end
 end
