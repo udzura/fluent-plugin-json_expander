@@ -25,7 +25,7 @@ add_prefix hello
     Fluent::EchoPoolOutput.echopool.clear
   end
 
-  def create_driver(conf = get_config, tag='test.default')
+  def create_driver(conf: get_config, tag: 'test.default')
     Fluent::Test::OutputTestDriver.new(Fluent::JsonExpanderOutput, tag).configure(conf)
   end
 
@@ -45,6 +45,21 @@ add_prefix hello
     emit0 = Fluent::EchoPoolOutput.echopool[0]
     assert { emit0[:message] == "Hello, Yukihiro Matsumoto!" }
     assert { emit0[:record]  == {"first_name"=>"Yukihiro", "last_name"=>"Matsumoto"} }
+    assert { emit0[:tag]     == "hello.default" }
+  end
+
+  def test_with_delete_used_key
+    d = create_driver(conf: get_config(delete_used_key: 'true'))
+    time = Time.parse("2012-01-02 13:14:15").to_i
+    d.tag = 'test.default'
+    d.run {
+      d.emit({'first_name' => "Ryosuke", 'last_name' => "Matsumoto", "extra" => "arg"}, time)
+    }
+
+    assert { Fluent::EchoPoolOutput.echopool.size == 1 }
+    emit0 = Fluent::EchoPoolOutput.echopool[0]
+    assert { emit0[:message] == "Hello, Ryosuke Matsumoto!" }
+    assert { emit0[:record]  == {"extra" => "arg"} }
     assert { emit0[:tag]     == "hello.default" }
   end
 end

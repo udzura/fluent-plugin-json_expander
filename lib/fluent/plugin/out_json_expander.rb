@@ -47,9 +47,9 @@ class Fluent::JsonExpanderOutput < Fluent::MultiOutput
     end
 
     es.each {|time, record|
-      output = new_output(record)
+      output, new_record = *new_output(record)
       if output
-        dup_es = Fluent::ArrayEventStream.new([[time, record]])
+        dup_es = Fluent::ArrayEventStream.new([[time, new_record]])
         null_chain = Fluent::NullOutputChain.instance
         output.emit(tag, dup_es, null_chain)
       end
@@ -64,7 +64,8 @@ class Fluent::JsonExpanderOutput < Fluent::MultiOutput
     t = @template
     begin
       @mutex.synchronize do
-        if e = expand_elm(t, data)
+        e, data = expand_elm(t, data)
+        if e
           o = Fluent::Plugin.new_output(@subtype)
           o.configure(e)
           o.start
@@ -86,7 +87,7 @@ class Fluent::JsonExpanderOutput < Fluent::MultiOutput
       o = nil
     end
 
-    return o
+    return o, data
   end
 
   SCAN_DATA_RE = /\$\{data\[(?:[_a-zA-Z][_a-zA-Z0-9]*)\]\}/
@@ -100,11 +101,11 @@ class Fluent::JsonExpanderOutput < Fluent::MultiOutput
         if !key_matched or !key_matched[0]
           raise(Fluent::ConfigError, "[BUG] data matched in template, but could not find key name")
         end
-        if @handle_empty_as_error
-          k = key_matched[0]
-          data[k] || mark_errored(k, data)
+        target = key_matched[0]
+        if @delete_used_key
+          data.delete(target) || on_empty_data(target, data)
         else
-          data[key_matched[0]] || ""
+          data[target] || on_empty_data(target, data)
         end
       end
       attr[k] = v
@@ -113,14 +114,17 @@ class Fluent::JsonExpanderOutput < Fluent::MultiOutput
     sub_elms = template.elements.map {|e| expand_elm(data) }
 
     if @mark_errored
-      nil
+      return nil, nil
     else
-      Fluent::Config::Element.new('instance', '', attr, sub_elms)
+      return Fluent::Config::Element.new('instance', '', attr, sub_elms), data
     end
   end
 
-  def mark_errored(k, data)
-    log.error "Could not find value for `#{k}' in data #{data.inspect}, Fluentd skips this"
-    @mark_errored = true
+  def on_empty_data(k, data)
+    if @handle_empty_as_error
+      log.error "Could not find value for `#{k}' in data #{data.inspect}, Fluentd skips this"
+      @mark_errored = true
+    end
+    ""
   end
 end
