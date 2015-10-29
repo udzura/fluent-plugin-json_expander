@@ -1,5 +1,6 @@
 # fluent-plugin-json_expander
 
+[![Build Status](https://travis-ci.org/udzura/fluent-plugin-json_expander.svg?branch=master)](https://travis-ci.org/udzura/fluent-plugin-json_expander)
 
 ## Installation
 
