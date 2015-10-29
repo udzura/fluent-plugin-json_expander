@@ -65,7 +65,6 @@ class Fluent::JsonExpanderOutput < Fluent::MultiOutput
     @mappings.values.each do |output|
       output.shutdown
     end
-    @mappings.clear
   end
 
   private
@@ -169,5 +168,10 @@ class Fluent::JsonExpanderOutput < Fluent::MultiOutput
       @mark_errored = true
     end
     ""
+  end
+
+  # For testing...
+  def mappings
+    @mappings
   end
 end

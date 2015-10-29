@@ -66,7 +66,21 @@ add_prefix hello
     assert { Fluent::EchoPoolOutput.echopool[3][:message] == "Hello, Foo3 Bar!" }
   end
 
-    def test_emit_many_times_with_same_data
+  def test_emit_many_times_and_cached
+    d = create_driver
+    time = Time.parse("2012-01-02 13:14:15").to_i
+    d.tag = 'test.default'
+    d.run {
+      d.emit({'first_name' => "Yukihiro", 'last_name' => "Matsumoto"}, time)
+      d.emit({'first_name' => "Foo",  'last_name' => "Bar"}, time)
+      d.emit({'first_name' => "Foo2", 'last_name' => "Bar"}, time)
+      d.emit({'first_name' => "Foo3", 'last_name' => "Bar"}, time)
+    }
+
+    assert { d.instance.__send__(:mappings).size == 4 }
+  end
+
+  def test_emit_many_times_with_same_data
     d = create_driver
     time = Time.parse("2012-01-02 13:14:15").to_i
     d.tag = 'test.default'
