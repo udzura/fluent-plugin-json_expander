@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "fluent-plugin-json_expander"
-  spec.version       = "0.0.1.pre"
+  spec.version       = "0.0.1"
   spec.authors       = ["Uchio KONDO"]
   spec.email         = ["udzura@udzura.jp"]
 
