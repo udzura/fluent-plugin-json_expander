@@ -49,7 +49,9 @@ class Fluent::JsonExpanderOutput < Fluent::MultiOutput
     es.each {|time, record|
       output = new_output(record)
       if output
-        output.emit(tag, es, chain)
+        dup_es = Fluent::ArrayEventStream.new([[time, record]])
+        null_chain = Fluent::NullOutputChain.instance
+        output.emit(tag, dup_es, null_chain)
       end
     }
     chain.next
@@ -59,9 +61,10 @@ class Fluent::JsonExpanderOutput < Fluent::MultiOutput
 
   def new_output(data)
     o = nil
+    t = @template
     begin
       @mutex.synchronize do
-        if e = expand_elm(data)
+        if e = expand_elm(t, data)
           o = Fluent::Plugin.new_output(@subtype)
           o.configure(e)
           o.start
