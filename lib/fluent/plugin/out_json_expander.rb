@@ -31,13 +31,26 @@ class Fluent::JsonExpanderOutput < Fluent::MultiOutput
     @mappings = {}
     @invalid_mapping_keys = []
 
-    templates = conf.elements.select{|e| e.name == 'template' }
+    # touch_recursive: read and throw away to supress unread configuration warning
+    # ref: fluent-plugin-forest/lib/fluent/plugin/out_forest.rb
+    templates = conf.elements.select{|e| touch_recursive(e).name == 'template' }
+
     if templates.size != 1
       raise Fluent::ConfigError, "Just 1 template must be contained"
     end
 
     @template = templates.first
     @expand_target_keys = scan_keys(@template)
+  end
+
+  def touch_recursive(e)
+    e.keys.each do |k|
+      e[k]
+    end
+    e.elements.each do |child|
+      touch_recursive(child)
+    end
+    e
   end
 
   def emit(tag, es, chain)
