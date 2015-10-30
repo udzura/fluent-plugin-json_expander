@@ -26,7 +26,9 @@ add_prefix hello
   end
 
   def create_driver(conf: get_config, tag: 'test.default')
-    Fluent::Test::OutputTestDriver.new(Fluent::JsonExpanderOutput, tag).configure(conf)
+    d = Fluent::Test::OutputTestDriver.new(Fluent::JsonExpanderOutput, tag).configure(conf)
+    d.instance.log = Fluent::Log.new(STDOUT, Fluent::Log::LEVEL_TRACE) if $DEBUG_LOG2STDOUT
+    d
   end
 
   def test_configure
